@@ -7,7 +7,7 @@
   <author>Georg Bartels</author>
   <license>BSD</license>
   <url>https://github.com/airballking/iai-seminar-manipulation-solution/wiki</url>
-
+  <depend package="gazebo_worlds"/>
 </package>
 
 
