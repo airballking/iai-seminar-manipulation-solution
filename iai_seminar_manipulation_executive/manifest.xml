@@ -1,0 +1,12 @@
+<package>
+  <description brief="iai_seminar_manipulation_executive">
+
+     iai_seminar_manipulation_executive
+
+  </description>
+  <author>Georg Bartels</author>
+  <license>BSD</license>
+  <url>https://github.com/airballking/iai-seminar-manipulation-solution.git</url>
+
+  <depend package="roscpp"/>
+</package>
