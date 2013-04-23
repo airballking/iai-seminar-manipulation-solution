@@ -7,7 +7,13 @@
   <author>Georg Bartels</author>
   <license>BSD</license>
   <url>https://github.com/airballking/iai-seminar-manipulation-solution/wiki</url>
+  
   <depend package="gazebo_worlds"/>
+  <depend package="pr2_description"/>
+  <depend package="gazebo"/>
+  <depend package="pr2_controller_manager"/>
+  <depend package="rostopic"/>
+  <depend package="pr2_controller_configuration_gazebo"/>
 </package>
 
 
