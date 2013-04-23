@@ -1,0 +1,7 @@
+<launch>
+  <!-- Start the empty gazebo world -->
+  <include file="$(find iai_seminar_manipulation_environment)/launch/gazebo_empty_world.launch"/>
+
+  <!-- Start our lightweight PR2 simulation with only the controller nodes running -->
+  <include file="$(find iai_seminar_manipulation_environment)/launch/pr2_lightweight.launch"/>
+</launch>
