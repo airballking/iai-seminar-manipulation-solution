@@ -2,63 +2,53 @@
 #include <iai_seminar_manipulation_executive/RobotArm.h>
 #include <vector>
 
+bool use_standard_arm_interface(RobotArm& arm)
+{
+  // construct extra nodehandle with namespace of first goal configuration
+  ros::NodeHandle nh("~first_goal_configuration");
+  if(!arm.initGoal(nh))
+  {
+    ROS_ERROR("[iai_seminar_manipulation_executive] Standard arm init failed.");
+    return false;
+  }
+
+  // wait for server to show
+  if(!arm.waitForActionServer())
+  {
+    ROS_ERROR("[iai_seminar_manipulation_executive] Standard arm action server did not show.");
+    return false;
+  }
+
+  // start the motion
+  if(!arm.startTrajectory())
+  {
+    ROS_ERROR("[iai_seminar_manipulation_executive] Standard arm starting failed.");
+    return false;
+  }
+ 
+  // periodically see if the motion successfully finished
+  ros::Duration sleep_time = ros::Duration(0.01);
+  while(ros::ok() && !arm.getState().isDone())
+  {
+    sleep_time.sleep();
+  }
+
+  // all went fine
+  return true;
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "manipulation_executive");
   ros::NodeHandle n("~");
 
-  RobotArm left_arm(n, "left_arm_trajectory_action");
-  std::vector<std::string> joint_names;
-  std::vector<double> joint_goals;
-  std::vector<double> goal_velocities;
-  double duration = 4.0;
-  joint_names.clear();
-  joint_names.push_back("l_shoulder_pan_joint");
-  joint_names.push_back("l_shoulder_lift_joint");
-  joint_names.push_back("l_upper_arm_roll_joint");
-  joint_names.push_back("l_elbow_flex_joint");
-  joint_names.push_back("l_forearm_roll_joint");
-  joint_names.push_back("l_wrist_flex_joint");
-  joint_names.push_back("l_wrist_roll_joint");
+  RobotArm arm(n, "arm_trajectory_action");
 
-  joint_goals.clear();
-  joint_goals.push_back(1.05);
-  joint_goals.push_back(0.01);
-  joint_goals.push_back(0.61);
-  joint_goals.push_back(-0.44);
-  joint_goals.push_back(-5.6);
-  joint_goals.push_back(-0.86);
-  joint_goals.push_back(0.16);
- 
-  goal_velocities.clear();
-  for(unsigned int i=0; i<joint_goals.size(); i++)
-  {
-    goal_velocities.push_back(0.0);
-  }
+  // move arm using standard action interface
+  ROS_INFO("[iai_seminar_manipulation_executive] Using standard action interface to move arm...");
+  if(!use_standard_arm_interface(arm))
+    return 0; 
 
-  if(!left_arm.initGoal(joint_names, joint_goals, goal_velocities, duration))
-  {
-    ROS_ERROR("[iai_seminar_manipulation_executive] Left arm init failed.");
-    return 0;
-  }
-
-  if(!left_arm.waitForActionServer(5.0))
-  {
-    ROS_ERROR("[iai_seminar_manipulation_executive] Left arm action server did not show.");
-    return 0;
-  }
-
-  if(!left_arm.startTrajectory())
-  {
-    ROS_ERROR("[iai_seminar_manipulation_executive] Left arm starting failed.");
-    return 0;
-  }
- 
-  ros::Duration sleep_time = ros::Duration(0.01);
-  while(ros::ok() && !left_arm.getState().isDone())
-  {
-    sleep_time.sleep();
-  } 
   // all nice
   return 0;
 }

@@ -46,10 +46,9 @@ public:
 
   /** Waits for the action server to show up.
      
-      \param time_out [in] amount of time in seconds to wait
       \return [out] true if server showed, else false.
   */
-  bool waitForActionServer(double time_out);
+  bool waitForActionServer();
 
   /** Starts a trajectory using an externally provided goal.
   

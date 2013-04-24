@@ -1,8 +1,9 @@
 #include <iai_seminar_manipulation_executive/RobotArm.h>
+#include <iai_seminar_manipulation_executive/ParameterServerUtils.h>
 
 RobotArm::RobotArm(ros::NodeHandle& n, const std::string& name)
 {
-  trajectory_client_ = new TrajectoryClient(n, name);
+  trajectory_client_ = new TrajectoryClient(n, name, true);
   configured_ = false;
 }
 
@@ -53,15 +54,46 @@ bool RobotArm::initGoal(const std::vector<std::string>& joint_names, const std::
 
 bool RobotArm::initGoal(ros::NodeHandle& n)
 {
-  // TODO(Georg): implement this
-  return false;
+  // extract parameters from parameter server
+  std::vector<std::string> joint_names;
+  if(!loadStringVectorFromParameterServer(n, "joints", joint_names))
+  {
+    ROS_ERROR("[RobotArm::initGoal] Could not load joint names from parameter server.");
+    return false;
+  }
+
+  std::vector<double> joint_goals;
+  if(!loadDoubleVectorFromParameterServer(n, "positions", joint_goals))
+  {
+    ROS_ERROR("[RobotArm::initGoal] Could not load joint goals from parameter server.");
+    return false;
+  }
+
+  std::vector<double> goal_velocities;
+  if(!loadDoubleVectorFromParameterServer(n, "velocities", goal_velocities))
+  {
+    ROS_ERROR("[RobotArm::initGoal] Could not load joint goals from parameter server.");
+    return false;
+  }
+
+  double duration;
+  if(!loadDoubleFromParameterServer(n, "execution_time", duration))
+  {
+    ROS_ERROR("[RobotArm::initGoal] Could not load execution time from parameter server.");
+    return false;
+  }
+
+  // perform initialization
+  return initGoal(joint_names, joint_goals, goal_velocities, duration);
 }
 
-bool RobotArm::waitForActionServer(double time_out)
+bool RobotArm::waitForActionServer()
 {
   if(trajectory_client_)
   {
-    return trajectory_client_->waitForServer(ros::Duration(time_out));
+    while(!trajectory_client_->waitForServer(ros::Duration(1.0)))
+      ROS_INFO("[RobotArm:waitForActionServer] Waiting for action server to show up.");
+    return true;
   }
   else
   {
