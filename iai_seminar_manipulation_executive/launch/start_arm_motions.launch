@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="iai_seminar_manipulation_executive" type="manipulation_executive" name="manipulation_executive">
+    <remap from="~left_arm_trajectory_action" to="/l_arm_controller/joint_trajectory_action"/>
+  </node>
+</launch>
