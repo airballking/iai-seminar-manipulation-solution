@@ -6,7 +6,8 @@ RobotArm::RobotArm(ros::NodeHandle& n, const std::string& name)
   configured_ = false;
 }
 
-bool RobotArm::initGoal(const std::vector<std::string>& joint_names, const std::vector<double>& joint_goals, double duration)
+bool RobotArm::initGoal(const std::vector<std::string>& joint_names, const std::vector<double>& joint_goals,
+                        const std::vector<double>& joint_goal_velocities, double duration)
 {
   // check input
   if(joint_names.size() == 0)
@@ -24,6 +25,11 @@ bool RobotArm::initGoal(const std::vector<std::string>& joint_names, const std::
     ROS_ERROR("[RobotArm::initGoal] Provided vectors of joint names and goals had different sizes!");
     return false;
   }
+  if(joint_goal_velocities.size() != joint_goals.size())
+  {
+    ROS_ERROR("[RobotArm::initGoal] Provided vectors of joint names and goal velocities had different sizes!");
+    return false;
+  }
   if(!(duration > 0.0))
   {
     ROS_ERROR("[RobotArm::initGoal] Provided duration was a non-positive number.");
@@ -32,14 +38,10 @@ bool RobotArm::initGoal(const std::vector<std::string>& joint_names, const std::
   // set the joint_names
   goal_.trajectory.joint_names = joint_names;
 
-  // set only one trajectory point with goal and zero velocity
+  // set only one trajectory point with goal and velocity
   goal_.trajectory.points.resize(1);
   goal_.trajectory.points[0].positions = joint_goals;
-  goal_.trajectory.points[0].velocities.resize(joint_goals.size());
-  for (unsigned int i = 0; i<joint_goals.size(); i++)
-  {
-    goal_.trajectory.points[0].velocities[i] = 0.0;
-  }
+  goal_.trajectory.points[0].velocities = joint_goal_velocities;
 
   // set duration for only trajectory point
   goal_.trajectory.points[0].time_from_start = ros::Duration(duration); 
@@ -53,6 +55,20 @@ bool RobotArm::initGoal(ros::NodeHandle& n)
 {
   // TODO(Georg): implement this
   return false;
+}
+
+bool RobotArm::waitForActionServer(double time_out)
+{
+  if(trajectory_client_)
+  {
+    return trajectory_client_->waitForServer(ros::Duration(time_out));
+  }
+  else
+  {
+    // trajectory_client_ was null!
+    ROS_ERROR("[RobotArm::waitForActionServer] Trajectory client is NULL!");
+    return false;
+  }
 }
 
 bool RobotArm::startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal& goal)
@@ -77,6 +93,6 @@ bool RobotArm::startTrajectory()
   if(configured_)
     return startTrajectory(goal_);
 
-  // we were called even though to prior init was successful
+  // we were called even though the prior init was successful
   return false;
 }

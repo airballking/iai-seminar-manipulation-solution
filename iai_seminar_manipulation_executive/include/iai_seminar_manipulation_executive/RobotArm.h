@@ -29,10 +29,12 @@ public:
 
       \param joint_names [in] N joint_names of the joints that shall be moved.
       \param joint_goals [in] N joint_values that shall be reached by the motion.
+      \parma joint_goal_velocities [in] N joint_velocities at the end of the motion.
       \param duration [in] amount of time in seconds the motion shall last.
       \return [out] true if successful, otherwise false.
   */
-  bool initGoal(const std::vector<std::string>& joint_names, const std::vector<double>& joint_goals, double duration);
+  bool initGoal(const std::vector<std::string>& joint_names, const std::vector<double>& joint_goals,
+                const std::vector<double>& joint_goal_velocities, double duration);
 
   /** Initializes the goal of the arm interface. Reads the desired goal from the
       parameter server.
@@ -41,6 +43,13 @@ public:
       \return [out] true if successful, otherwise false.
   */
   bool initGoal(ros::NodeHandle& n);
+
+  /** Waits for the action server to show up.
+     
+      \param time_out [in] amount of time in seconds to wait
+      \return [out] true if server showed, else false.
+  */
+  bool waitForActionServer(double time_out);
 
   /** Starts a trajectory using an externally provided goal.
   
