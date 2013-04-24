@@ -9,4 +9,6 @@
   <url>https://github.com/airballking/iai-seminar-manipulation-solution.git</url>
 
   <depend package="roscpp"/>
+  <depend package="actionlib"/>
+  <depend package="pr2_controllers_msgs"/>
 </package>
