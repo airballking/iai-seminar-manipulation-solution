@@ -1,7 +1,14 @@
 <launch>
-  <node pkg="iai_seminar_manipulation_executive" type="manipulation_executive" name="manipulation_executive">
-    <remap from="~left_arm_trajectory_action" to="/l_arm_controller/joint_trajectory_action"/>
-    <rosparam file="$(find iai_seminar_manipulation_executive)/config/first_goal_configuration.yaml"
-      command="load" ns="first_goal_configuration"/>
+  <node pkg="iai_seminar_manipulation_executive" type="manipulation_executive" name="left_arm_manipulation_executive" output="screen">
+    <remap from="~arm_trajectory_action" to="/l_arm_controller/joint_trajectory_action"/>
+    <rosparam file="$(find iai_seminar_manipulation_executive)/config/left_arm_goals.yaml"
+      command="load"/>
   </node>
+
+  <node pkg="iai_seminar_manipulation_executive" type="manipulation_executive" name="right_arm_manipulation_executive" output="screen">
+    <remap from="~arm_trajectory_action" to="/r_arm_controller/joint_trajectory_action"/>
+    <rosparam file="$(find iai_seminar_manipulation_executive)/config/right_arm_goals.yaml"
+      command="load"/>
+  </node>
+
 </launch>
