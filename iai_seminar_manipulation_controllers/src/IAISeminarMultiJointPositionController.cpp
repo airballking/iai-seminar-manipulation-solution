@@ -70,33 +70,19 @@ void IaiSeminarMultiJointPositionController::starting()
 
 void IaiSeminarMultiJointPositionController::update()
 {
+  assert(joints_.size() == realtime_publisher_.msg_.actual.positions.size());
+  assert(joints_.size() == realtime_publisher_.msg_.actual.velocities.size());
+
   // publishing state information
   if(realtime_publisher_.trylock())
   {
     // putting time-stamp
     realtime_publisher_.msg_.header.stamp = ros::Time::now();
     // copying current values
-    if(joints_.size() == realtime_publisher_.msg_.actual.positions.size())
+    for(unsigned i=0; i<joints_.size(); i++)
     {
-      for(unsigned i=0; i<joints_.size(); i++)
-      {
-        realtime_publisher_.msg_.actual.positions[i] = joints_[i]->position_;
-      }
-    }
-    else
-    {
-      ROS_ERROR("Size of message and internal data structures of actual joint positions do not match.");
-    }
-    if(joints_.size() == realtime_publisher_.msg_.actual.velocities.size())
-    {
-      for(unsigned i=0; i<joints_.size(); i++)
-      {
-        realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
-      }
-    }
-    else
-    {
-      ROS_ERROR("Size of message and internal data structures of actual joint velocities do not match.");
+      realtime_publisher_.msg_.actual.positions[i] = joints_[i]->position_;
+      realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
     }
     realtime_publisher_.unlockAndPublish();
   }
