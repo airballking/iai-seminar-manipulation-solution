@@ -1,5 +1,6 @@
 #include <pr2_controller_interface/controller.h>
 #include <pr2_mechanism_model/joint.h>
+#include <vector>
 
 class IaiSeminarMultiJointPositionController: public pr2_controller_interface::Controller
 {
