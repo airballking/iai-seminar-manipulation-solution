@@ -35,6 +35,20 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
       return false;
     }
   }
+
+  // initializing publisher
+  realtime_publisher_.init(n, "state", 1);
+
+  // resizing state-msg within publisher and intializing it with the correct joint-names
+  unsigned int dof = joints_.size();
+  realtime_publisher_.msg_.joint_names = joint_names;
+  realtime_publisher_.msg_.actual.positions.resize(dof);
+  realtime_publisher_.msg_.actual.velocities.resize(dof);
+  realtime_publisher_.msg_.desired.positions.resize(dof);
+  realtime_publisher_.msg_.desired.velocities.resize(dof);
+  realtime_publisher_.msg_.error.positions.resize(dof);
+  realtime_publisher_.msg_.error.velocities.resize(dof);
+  
   return true;
 }
 
@@ -45,7 +59,36 @@ void IaiSeminarMultiJointPositionController::starting()
 
 void IaiSeminarMultiJointPositionController::update()
 {
-
+  // publishing state information
+  if(realtime_publisher_.trylock())
+  {
+    // putting time-stamp
+    realtime_publisher_.msg_.header.stamp = ros::Time::now();
+    // copying current values
+    if(joints_.size() == realtime_publisher_.msg_.actual.positions.size())
+    {
+      for(unsigned i=0; i<joints_.size(); i++)
+      {
+        realtime_publisher_.msg_.actual.positions[i] = joints_[i]->position_;
+      }
+    }
+    else
+    {
+      ROS_ERROR("Size of message and internal data structures of actual joint positions do not match.");
+    }
+    if(joints_.size() == realtime_publisher_.msg_.actual.velocities.size())
+    {
+      for(unsigned i=0; i<joints_.size(); i++)
+      {
+        realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
+      }
+    }
+    else
+    {
+      ROS_ERROR("Size of message and internal data structures of actual joint velocities do not match.");
+    }
+    realtime_publisher_.unlockAndPublish();
+  }
 }
 
 void IaiSeminarMultiJointPositionController::stopping()
