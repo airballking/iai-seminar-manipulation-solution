@@ -72,7 +72,10 @@ void IaiSeminarMultiJointPositionController::update()
 {
   assert(joints_.size() == realtime_publisher_.msg_.actual.positions.size());
   assert(joints_.size() == realtime_publisher_.msg_.actual.velocities.size());
-
+  assert(joints_.size() == realtime_publisher_.msg_.desired.positions.size());
+  assert(joints_.size() == realtime_publisher_.msg_.desired.velocities.size());
+  assert(joints_.size() == position_command_.size());
+  
   // publishing state information
   if(realtime_publisher_.trylock())
   {
@@ -83,6 +86,12 @@ void IaiSeminarMultiJointPositionController::update()
     {
       realtime_publisher_.msg_.actual.positions[i] = joints_[i]->position_;
       realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
+    }
+    // copying desired values
+    for(unsigned i=0; i<joints_.size(); i++)
+    {
+      realtime_publisher_.msg_.desired.positions[i] = position_command_[i];
+      realtime_publisher_.msg_.desired.positions[i] = 0.0;
     }
     realtime_publisher_.unlockAndPublish();
   }
