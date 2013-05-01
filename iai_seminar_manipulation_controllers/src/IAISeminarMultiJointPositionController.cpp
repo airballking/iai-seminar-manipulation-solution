@@ -20,3 +20,6 @@ void IaiSeminarMultiJointPositionController::stopping()
 {
 
 }
+
+// Register our controller to the pluginlib
+PLUGINLIB_DECLARE_CLASS(iai_seminar_manipulation_controllers, IaiSeminarMultiJointPositionController, IaiSeminarMultiJointPositionController, pr2_controller_interface::Controller)
