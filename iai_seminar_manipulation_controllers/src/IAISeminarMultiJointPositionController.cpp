@@ -12,10 +12,11 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
     ROS_ERROR("Could not load joint names from parameter server.");
     return false;
   }
+  unsigned int dof = joint_names.size();
 
   // look up and save pointers to the joint-states of those joints
   joints_.clear();
-  for(unsigned int i=0; i<joint_names.size(); i++)
+  for(unsigned int i=0; i<dof; i++)
   {
     pr2_mechanism_model::JointState* joint_pointer = robot->getJointState(joint_names[i]);
     if(!joint_pointer)
@@ -27,7 +28,7 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
   }
 
   // check if all joints have been calibrated
-  for(unsigned int i=0; i<joints_.size(); i++)
+  for(unsigned int i=0; i<dof; i++)
   {
     if(!joints_[i]->calibrated_)
     {
@@ -36,11 +37,14 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
     }
   }
 
+  // initialize both buffers for position command
+  position_command_.resize(dof);
+  position_command_buffer_.resize(dof);
+
   // initializing publisher
   realtime_publisher_.init(n, "state", 1);
 
   // resizing state-msg within publisher and intializing it with the correct joint-names
-  unsigned int dof = joints_.size();
   realtime_publisher_.msg_.joint_names = joint_names;
   realtime_publisher_.msg_.actual.positions.resize(dof);
   realtime_publisher_.msg_.actual.velocities.resize(dof);
@@ -54,7 +58,14 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
 
 void IaiSeminarMultiJointPositionController::starting()
 {
-
+  // set both command buffers to current configuration
+  boost::mutex::scoped_lock guard(command_mutex_);
+  for(unsigned int i=0; i<joints_.size(); i++)
+  {
+    position_command_[i] = joints_[i]->position_;
+    position_command_buffer_[i] = joints_[i]->position_; 
+  }
+  guard.unlock();
 }
 
 void IaiSeminarMultiJointPositionController::update()
