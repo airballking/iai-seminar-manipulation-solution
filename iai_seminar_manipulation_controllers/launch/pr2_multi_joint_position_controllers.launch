@@ -1,0 +1,7 @@
+<launch>
+  <!-- load params of the two joint-position controllers onto the parameter server -->
+  <rosparam command="load" file="$(find iai_seminar_manipulation_controllers)/launch/pr2_multi_joint_position_controllers.yaml"/>
+
+  <!-- spawn our controllers in stopped state -->
+  <node name="spawn_iai_joint_controllers" pkg="pr2_controller_manager" type="spawner" args="--stopped r_arm_iai_joint_position_controller l_arm_iai_joint_position_controller"/>
+</launch>
