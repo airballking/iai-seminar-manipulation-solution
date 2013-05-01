@@ -3,7 +3,7 @@
 
 bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotState *robot, ros::NodeHandle& n)
 {
-  return false;
+  return true;
 }
 
 void IaiSeminarMultiJointPositionController::starting()
