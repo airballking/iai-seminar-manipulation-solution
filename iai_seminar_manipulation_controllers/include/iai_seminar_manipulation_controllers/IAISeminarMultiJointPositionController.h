@@ -5,7 +5,7 @@
 class IaiSeminarMultiJointPositionController: public pr2_controller_interface::Controller
 {
 private:
-  pr2_mechanism_model::JointState* joint_state_;
+  std::vector<pr2_mechanism_model::JointState*> joints_;
 
 public:
   virtual bool init(pr2_mechanism_model::RobotState *robot, ros::NodeHandle& n);
