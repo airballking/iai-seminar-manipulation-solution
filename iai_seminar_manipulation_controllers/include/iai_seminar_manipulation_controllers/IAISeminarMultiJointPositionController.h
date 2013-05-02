@@ -17,8 +17,15 @@ class IaiSeminarMultiJointPositionController: public pr2_controller_interface::C
 private:
   // internal pointers to all the joints to control
   std::vector<pr2_mechanism_model::JointState*> joints_;
+  // internal pointer to the robot object
+  pr2_mechanism_model::RobotState* robot_;
   // vector holding a pid-controller for every joint to control
   std::vector<control_toolbox::Pid> pids_; 
+
+  // container to store the last time our update was called, needed to calculate time between cycles
+  ros::Time last_time_;
+  // container to hold the calculated error between actual and desired positions of all joints to control
+  std::vector<double> error_;
  
   // a real-time-safe publisher to publish the state of our controller
   realtime_tools::RealtimePublisher<pr2_controllers_msgs::JointTrajectoryControllerState> realtime_publisher_; 

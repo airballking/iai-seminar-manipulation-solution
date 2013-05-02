@@ -4,6 +4,9 @@
 
 bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotState *robot, ros::NodeHandle& n)
 {
+  // remember robot pointer
+  robot_ = robot;
+  
   // look up names of joints to control from parameter server
   std::vector<std::string> joint_names;
   joint_names.clear();
@@ -54,6 +57,9 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
   position_command_.resize(dof);
   position_command_buffer_.resize(dof);
 
+  // initialize error data structure
+  error_.resize(dof);
+
   // initialize subscriber
   command_subscriber_ = n.subscribe("command", 1, &IaiSeminarMultiJointPositionController::command_callback, this);
 
@@ -80,6 +86,15 @@ void IaiSeminarMultiJointPositionController::starting()
     position_command_buffer_[i] = joints_[i]->position_; 
   }
   guard.unlock();
+
+  // reseting the pid-controllers
+  for (unsigned int i=0; i<pids_.size(); i++)
+  {
+    pids_[i].reset();
+  }
+
+  // remembering starting time
+  last_time_ = robot_->getTime();
 }
 
 void IaiSeminarMultiJointPositionController::update()
@@ -88,16 +103,29 @@ void IaiSeminarMultiJointPositionController::update()
   assert(joints_.size() == realtime_publisher_.msg_.actual.velocities.size());
   assert(joints_.size() == realtime_publisher_.msg_.desired.positions.size());
   assert(joints_.size() == position_command_.size());
+  assert(joints_.size() == error_.size());
+  assert(joints_.size() == pids_.size());
 
+  // remember the current time as last time and calculate the dt between now and last cycle
+  ros::Duration dt = robot_->getTime() - last_time_;
+  last_time_ = robot_->getTime();
+ 
   // copy content of command buffer into command data structure
   copy_command_buffer();
 
+  // calculate the error vector and control using the pid controllers
+  for(unsigned int i=0; i<joints_.size(); i++)
+  {
+    error_[i] = joints_[i]->position_ - position_command_[i];
+    joints_[i]->commanded_effort_ = pids_[i].updatePid(error_[i], dt);
+  }
+ 
   // CONTROL FINISHED 
   // publishing state information
   if(realtime_publisher_.trylock())
   {
     // putting time-stamp
-    realtime_publisher_.msg_.header.stamp = ros::Time::now();
+    realtime_publisher_.msg_.header.stamp = robot_->getTime();
         // copying data inside message
     for(unsigned i=0; i<joints_.size(); i++)
     {
@@ -106,6 +134,8 @@ void IaiSeminarMultiJointPositionController::update()
       realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
       // copying desired values
       realtime_publisher_.msg_.desired.positions[i] = position_command_[i];
+      // copying the current error
+      realtime_publisher_.msg_.error.positions[i] = error_[i];
     }
     realtime_publisher_.unlockAndPublish();
   }
@@ -113,7 +143,7 @@ void IaiSeminarMultiJointPositionController::update()
 
 void IaiSeminarMultiJointPositionController::stopping()
 {
-
+  //nothing to do
 }
 
 void IaiSeminarMultiJointPositionController::command_callback(const std_msgs::Float64MultiArrayConstPtr& msg)
