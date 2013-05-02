@@ -41,6 +41,9 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
   position_command_.resize(dof);
   position_command_buffer_.resize(dof);
 
+  // initialize subscriber
+  command_subscriber_ = n.subscribe("command", 1, &IaiSeminarMultiJointPositionController::command_callback, this);
+
   // initializing publisher
   realtime_publisher_.init(n, "state", 1);
 
@@ -75,23 +78,25 @@ void IaiSeminarMultiJointPositionController::update()
   assert(joints_.size() == realtime_publisher_.msg_.desired.positions.size());
   assert(joints_.size() == realtime_publisher_.msg_.desired.velocities.size());
   assert(joints_.size() == position_command_.size());
-  
+
+  // copy content of command buffer into command data structure
+  copy_command_buffer();
+
+  // CONTROL FINISHED 
   // publishing state information
   if(realtime_publisher_.trylock())
   {
     // putting time-stamp
     realtime_publisher_.msg_.header.stamp = ros::Time::now();
-    // copying current values
+        // copying data inside message
     for(unsigned i=0; i<joints_.size(); i++)
     {
+      // copying current values
       realtime_publisher_.msg_.actual.positions[i] = joints_[i]->position_;
       realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
-    }
-    // copying desired values
-    for(unsigned i=0; i<joints_.size(); i++)
-    {
+      // copying desired values
       realtime_publisher_.msg_.desired.positions[i] = position_command_[i];
-      realtime_publisher_.msg_.desired.positions[i] = 0.0;
+      realtime_publisher_.msg_.desired.velocities[i] = 0.0;
     }
     realtime_publisher_.unlockAndPublish();
   }
@@ -102,5 +107,28 @@ void IaiSeminarMultiJointPositionController::stopping()
 
 }
 
+void IaiSeminarMultiJointPositionController::command_callback(const std_msgs::Float64MultiArrayConstPtr& msg)
+{
+  assert(msg->data.size() == position_command_buffer_.size());
+
+  boost::mutex::scoped_lock guard(command_mutex_);
+  for(unsigned int i=0; i<position_command_buffer_.size(); i++)
+  {
+    position_command_buffer_[i] = msg->data[i];
+  }
+}
+
+void IaiSeminarMultiJointPositionController::copy_command_buffer()
+{
+  assert(position_command_.size() == position_command_buffer_.size());
+
+  // copying the command in from the command-buffer
+  boost::mutex::scoped_lock guard(command_mutex_);
+  for(unsigned int i=0; i< position_command_.size(); i++)
+  {  
+    position_command_[i] = position_command_buffer_[i];
+  }
+}
+ 
 // Register our controller to the pluginlib
 PLUGINLIB_DECLARE_CLASS(iai_seminar_manipulation_controllers, IaiSeminarMultiJointPositionController, IaiSeminarMultiJointPositionController, pr2_controller_interface::Controller)
