@@ -1,0 +1,17 @@
+<package>
+  <description brief="iai_seminar_manipulation_utils">
+
+     iai_seminar_manipulation_utils
+
+  </description>
+  <author>Georg Bartels</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>https://github.com/airballking/iai-seminar-manipulation-solution</url>
+  <depend package="roscpp"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lparameter_server_utils"/>
+  </export>
+</package>
+
+

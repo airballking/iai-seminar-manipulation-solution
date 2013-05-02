@@ -1,5 +1,5 @@
 #include <iai_seminar_manipulation_executive/RobotArm.h>
-#include <iai_seminar_manipulation_executive/ParameterServerUtils.h>
+#include <iai_seminar_manipulation_utils/ParameterServerUtils.h>
 
 RobotArm::RobotArm(ros::NodeHandle& n, const std::string& name)
 {

@@ -11,7 +11,5 @@
   <depend package="roscpp"/>
   <depend package="actionlib"/>
   <depend package="pr2_controllers_msgs"/>
-  <export>
-    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lparameter_server_utils"/>
-  </export>
+  <depend package="iai_seminar_manipulation_utils"/>
 </package>

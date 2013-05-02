@@ -9,11 +9,10 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(parameter_server_utils src/ParameterServerUtils.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(manipulation_executive src/main.cpp src/RobotArm.cpp src/ParameterServerUtils.cpp)
+rosbuild_add_executable(manipulation_executive src/main.cpp src/RobotArm.cpp)
 rosbuild_link_boost(manipulation_executive thread)
 
 #target_link_libraries(example ${PROJECT_NAME})

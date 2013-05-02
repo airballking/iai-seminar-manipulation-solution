@@ -1,4 +1,4 @@
-#include <iai_seminar_manipulation_executive/ParameterServerUtils.h>
+#include <iai_seminar_manipulation_utils/ParameterServerUtils.h>
 
 bool loadStringVectorFromParameterServer(ros::NodeHandle& n, const std::string& parameter_name,
   std::vector<std::string>& parameters)
