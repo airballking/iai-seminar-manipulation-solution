@@ -8,6 +8,8 @@
 
 #include <boost/thread/recursive_mutex.hpp>
 
+#include <control_toolbox/pid.h>
+
 #include <vector>
 
 class IaiSeminarMultiJointPositionController: public pr2_controller_interface::Controller
@@ -15,7 +17,9 @@ class IaiSeminarMultiJointPositionController: public pr2_controller_interface::C
 private:
   // internal pointers to all the joints to control
   std::vector<pr2_mechanism_model::JointState*> joints_;
-  
+  // vector holding a pid-controller for every joint to control
+  std::vector<control_toolbox::Pid> pids_; 
+ 
   // a real-time-safe publisher to publish the state of our controller
   realtime_tools::RealtimePublisher<pr2_controllers_msgs::JointTrajectoryControllerState> realtime_publisher_; 
 
@@ -26,7 +30,6 @@ private:
 
   // subscriber object used to listen to command topic
   ros::Subscriber command_subscriber_;
-  
   // callback to copy in desired joint positions from topic
   void command_callback(const std_msgs::Float64MultiArrayConstPtr& msg);
 

@@ -37,6 +37,19 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
     }
   }
 
+  // read pid-gains from parameter server
+  pids_.resize(dof);
+  for(unsigned int i=0; i<dof; i++)
+  {
+    // constructing the namespace in which the gains of the current joint are stored
+    std::string gains_ns = n.getNamespace() + "/gains/" + joint_names[i];
+    if(!pids_[i].initParam(gains_ns))
+    {
+      ROS_ERROR("PID gains for joint '%s' could not be found in namespace '%s'.", joint_names[i].c_str(), gains_ns.c_str());
+      return false;
+    }
+  } 
+
   // initialize both buffers for position command
   position_command_.resize(dof);
   position_command_buffer_.resize(dof);
