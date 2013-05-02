@@ -1,6 +1,6 @@
 #include <iai_seminar_manipulation_controllers/IAISeminarMultiJointPositionController.h>
 #include <pluginlib/class_list_macros.h>
-#include <iai_seminar_manipulation_executive/ParameterServerUtils.h>
+#include <iai_seminar_manipulation_utils/ParameterServerUtils.h>
 
 bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotState *robot, ros::NodeHandle& n)
 {

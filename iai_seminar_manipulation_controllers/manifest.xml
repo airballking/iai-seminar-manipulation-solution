@@ -11,7 +11,7 @@
   <depend package="pr2_controller_interface"/>
   <depend package="pr2_mechanism_model"/>
   <depend package="pluginlib"/>
-  <depend package="iai_seminar_manipulation_executive"/>  
+  <depend package="iai_seminar_manipulation_utils"/>  
   <depend package="pr2_controllers_msgs"/>
   <depend package="realtime_tools"/>
 
