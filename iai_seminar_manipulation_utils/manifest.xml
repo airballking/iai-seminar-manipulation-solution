@@ -7,7 +7,8 @@
   <author>Georg Bartels</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>https://github.com/airballking/iai-seminar-manipulation-solution</url>
+  <url>https://github.com/airballking/iai-seminar-manipulation-solution.git</url>
+
   <depend package="roscpp"/>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lparameter_server_utils"/>
