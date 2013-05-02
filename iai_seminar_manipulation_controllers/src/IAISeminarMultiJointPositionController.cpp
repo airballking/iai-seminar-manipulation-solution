@@ -52,9 +52,7 @@ bool IaiSeminarMultiJointPositionController::init(pr2_mechanism_model::RobotStat
   realtime_publisher_.msg_.actual.positions.resize(dof);
   realtime_publisher_.msg_.actual.velocities.resize(dof);
   realtime_publisher_.msg_.desired.positions.resize(dof);
-  realtime_publisher_.msg_.desired.velocities.resize(dof);
   realtime_publisher_.msg_.error.positions.resize(dof);
-  realtime_publisher_.msg_.error.velocities.resize(dof);
   
   return true;
 }
@@ -76,7 +74,6 @@ void IaiSeminarMultiJointPositionController::update()
   assert(joints_.size() == realtime_publisher_.msg_.actual.positions.size());
   assert(joints_.size() == realtime_publisher_.msg_.actual.velocities.size());
   assert(joints_.size() == realtime_publisher_.msg_.desired.positions.size());
-  assert(joints_.size() == realtime_publisher_.msg_.desired.velocities.size());
   assert(joints_.size() == position_command_.size());
 
   // copy content of command buffer into command data structure
@@ -96,7 +93,6 @@ void IaiSeminarMultiJointPositionController::update()
       realtime_publisher_.msg_.actual.velocities[i] = joints_[i]->velocity_;
       // copying desired values
       realtime_publisher_.msg_.desired.positions[i] = position_command_[i];
-      realtime_publisher_.msg_.desired.velocities[i] = 0.0;
     }
     realtime_publisher_.unlockAndPublish();
   }
