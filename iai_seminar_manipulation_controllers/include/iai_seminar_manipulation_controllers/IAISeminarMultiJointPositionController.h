@@ -1,3 +1,6 @@
+#ifndef IAISEMINARMULTIJOINTPOSITIONCONTROLLER_H_
+#define IAISEMINARMULTIJOINTPOSITIONCONTROLLER_H_
+
 #include <pr2_controller_interface/controller.h>
 #include <pr2_mechanism_model/joint.h>
 
@@ -58,3 +61,5 @@ public:
   // real-time safe: called once when stopping the controller
   virtual void stopping();
 };
+
+#endif /* IAISEMINARMULTIJOINTPOSITIONCONTROLLER_H_ */

@@ -1,3 +1,6 @@
+#ifndef PARAMETERSERVERUTILS_H_
+#define PARAMETERSERVERUTILS_H_
+
 #include <ros/ros.h>
 #include <vector>
 
@@ -30,3 +33,5 @@ bool loadDoubleVectorFromParameterServer(ros::NodeHandle& n, const std::string& 
 */
 bool loadDoubleFromParameterServer(ros::NodeHandle& n, const std::string& parameter_name,
   double& parameter);
+
+#endif /* PARAMETERSERVERUTILS_H_ */

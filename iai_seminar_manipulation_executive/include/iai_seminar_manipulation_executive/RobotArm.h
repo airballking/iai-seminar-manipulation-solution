@@ -1,3 +1,6 @@
+#ifndef ROBOTARM_H_
+#define ROBOTARM_H_
+
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
@@ -87,3 +90,5 @@ private:
   // a flag to signal that initialization of the interface was successful
   bool configured_; 
 };
+
+#endif /* ROBOTARM_H_ */
