@@ -42,7 +42,7 @@ private:
 
   // auxiliary function that copies content of position_command_buffer_ into position_command_
   // uses mutex to guard against interference and appear atomic
-  void copy_command_buffer();
+  void copy_from_command_buffer();
 public:
   // standard interface of pr2 controllers...
 

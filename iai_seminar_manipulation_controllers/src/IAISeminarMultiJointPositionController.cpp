@@ -111,7 +111,7 @@ void IaiSeminarMultiJointPositionController::update()
   last_time_ = robot_->getTime();
  
   // copy content of command buffer into command data structure
-  copy_command_buffer();
+  copy_from_command_buffer();
 
   // calculate the error vector and control using the pid controllers
   for(unsigned int i=0; i<joints_.size(); i++)
@@ -157,7 +157,7 @@ void IaiSeminarMultiJointPositionController::command_callback(const std_msgs::Fl
   }
 }
 
-void IaiSeminarMultiJointPositionController::copy_command_buffer()
+void IaiSeminarMultiJointPositionController::copy_from_command_buffer()
 {
   assert(position_command_.size() == position_command_buffer_.size());
 
